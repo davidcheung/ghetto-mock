@@ -1,0 +1,1 @@
+module.exports = { success: true, data: "data from get.js" }

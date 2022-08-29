@@ -1,0 +1,46 @@
+const http = require('http')
+
+const host = process.env.HOST || '0.0.0.0'
+const port = process.env.PORT || 8080
+const contentPath = process.env.CONTENT_PATH || '../conf/'
+const routesFileName = process.env.ROUTES_FILE_NAME || 'routes.json'
+
+const routes = require(`${contentPath}${routesFileName}`)
+
+const requestListener = function (req, res) {
+  res.setHeader('Content-Type', 'application/json')
+  // CORS headers
+  if (process.env.CORS || process.env.CORS_ORIGIN) {
+    res.setHeader('Access-Control-Allow-Headers','content-type')
+    res.setHeader('Access-Control-Allow-Credentials','true')
+    res.setHeader('Access-Control-Allow-Origin',process.env.CORS_ORIGIN || "*")
+    res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS, PUT, PATCH, DELETE')
+    if(req.method === 'OPTIONS') {
+      res.statusCode = 204
+      return res.end()
+    }
+  }
+
+  // router lol
+  const match = routes.find(({route, method}) => {
+    const matchMethod = req.method !== "GET" ? req.method == method : true
+    return req.url.includes(route) && matchMethod
+  })
+
+  if (!match) {
+    res.statusCode = 404
+    return res.end("not found")
+  }
+
+  // This will literally eval anything, living on the edge
+  // if you run this on a real server they can probably `rm rf` you
+  match.log ? console.log(eval('`'+match.log+'`')) : console.log(`${req.method} - ${req.url}`)
+
+  const content = require(`${contentPath}${match.payload}`)
+  res.end(JSON.stringify(content))
+}
+
+const server = http.createServer(requestListener)
+server.listen(port, host, () => {
+  console.log(`Server is running on http://${host}:${port}`)
+})

@@ -1,0 +1,14 @@
+# For development
+version: '3'
+
+services:
+  mock-random-service:
+    container_name:  mock-svc
+    ports:
+      - 8080:8080
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ./src:/app/src/
+      - ./example:/app/conf/
