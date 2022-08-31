@@ -23,7 +23,7 @@ const requestListener = function (req, res) {
 
   // router lol
   const match = routes.find(({route, method}) => {
-    const matchMethod = req.method !== "GET" ? req.method == method : true
+    const matchMethod = method !== "GET" ? req.method == method : true
     return req.url.includes(route) && matchMethod
   })
 

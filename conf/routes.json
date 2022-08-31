@@ -1,0 +1,18 @@
+[
+  {
+    "method": "POST",
+    "route": "/ping",
+    "payload": "post.json"
+  },
+  {
+    "method": "GET",
+    "route": "/ping",
+    "payload": "get"
+  },
+  {
+    "method": "GET",
+    "route": "/",
+    "payload": "default.json",
+    "log": "${new Date()} - ${req.url}"
+  }
+]
