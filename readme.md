@@ -1,5 +1,5 @@
 # ghetto-mock
-mock ur services in a ghetto way
+mock ur services in a ghetto way, meant to be used via docker-compose mounting volumes with predefined configs
 
 
 ## Mocking a service
