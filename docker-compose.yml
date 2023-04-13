@@ -3,7 +3,7 @@ version: '3'
 
 services:
   mock-random-service:
-    container_name:  mock-svc
+    # container_name:  mock-svc
     ports:
       - 8080:8080
     build:
@@ -11,4 +11,4 @@ services:
       dockerfile: ./Dockerfile.dev
     volumes:
       - ./src:/app/src/
-      - ./example:/app/conf/
+      - ./example/config:/app/conf/

@@ -3,7 +3,7 @@ const http = require('http')
 const host = process.env.HOST || '0.0.0.0'
 const port = process.env.PORT || 8080
 const contentPath = process.env.CONTENT_PATH || '../conf/'
-const routesFileName = process.env.ROUTES_FILE_NAME || 'routes.json'
+const routesFileName = process.env.ROUTES_FILE_NAME || 'config.json'
 
 const routes = require(`${contentPath}${routesFileName}`)
 
@@ -23,8 +23,10 @@ const requestListener = function (req, res) {
 
   // router lol
   const match = routes.find(({route, method}) => {
-    const matchMethod = method !== "GET" ? req.method == method : true
-    return req.url.includes(route) && matchMethod
+    const methodMatch = method ? req.method.toLowerCase() == method.toLowerCase() : true
+    const routeMatch = req.url.includes(route)
+
+    return routeMatch && methodMatch
   })
 
   if (!match) {
@@ -36,8 +38,23 @@ const requestListener = function (req, res) {
   // if you run this on a real server they can probably `rm rf` you
   match.log ? console.log(eval('`'+match.log+'`')) : console.log(`${req.method} - ${req.url}`)
 
-  const content = require(`${contentPath}${match.payload}`)
-  res.end(JSON.stringify(content))
+
+  if (match.payload) {
+    res.end(JSON.stringify(match.payload))
+  } else if (match.payloadPath) {
+    try {
+      const payload = require(`${contentPath}${match.payloadPath}`)
+      if (typeof payload === 'function') {
+        res.end(JSON.stringify(payload(req, res)))
+      } else {
+        res.end(JSON.stringify(payload))
+      }
+    } catch (e) {
+      res.statusCode = 404
+      res.end("content not found")
+    }
+  }
+
 }
 
 const server = http.createServer(requestListener)

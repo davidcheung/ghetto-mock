@@ -2,17 +2,18 @@
   {
     "method": "POST",
     "route": "/ping",
-    "payload": "post.json"
+    "payloadPath": "post.json"
   },
   {
     "method": "GET",
     "route": "/ping",
-    "payload": "get"
+    "payloadPath": "get"
   },
   {
-    "method": "GET",
     "route": "/",
-    "payload": "default.json",
+    "payload": {
+      "success": true
+    },
     "log": "${new Date()} - ${req.url}"
   }
 ]
